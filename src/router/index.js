@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '../store'
+
+
 
 // Containers
 const DefaultContainer = () => import('@/containers/DefaultContainer')
@@ -60,7 +63,7 @@ const User = () => import('@/views/users/User')
 
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
   mode: 'hash', // https://router.vuejs.org/api/#mode
   linkActiveClass: 'open active',
   scrollBehavior: () => ({ y: 0 }),
@@ -70,6 +73,9 @@ export default new Router({
       redirect: '/dashboard',
       name: 'Home',
       component: DefaultContainer,
+      meta: {
+        requiresAuth: true
+      },
       children: [
         {
           path: 'dashboard',
@@ -303,9 +309,17 @@ export default new Router({
       ]
     },
     {
+      path: '/login',
+      name:'Login',
+      component:Login
+    },
+    {
       path: '/pages',
       redirect: '/pages/404',
       name: 'Pages',
+      meta: {
+        requiresAuth: true
+      },
       component: {
         render (c) { return c('router-view') }
       },
@@ -321,11 +335,6 @@ export default new Router({
           component: Page500
         },
         {
-          path: 'login',
-          name: 'Login',
-          component: Login
-        },
-        {
           path: 'register',
           name: 'Register',
           component: Register
@@ -334,3 +343,16 @@ export default new Router({
     }
   ]
 })
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+    if (store.getters.isLoggedIn) {
+      next()
+      return
+    }
+    next('/login')
+  } else {
+    next()
+  }
+})
+
+export default router
