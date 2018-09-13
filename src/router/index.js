@@ -10,11 +10,17 @@ const DefaultContainer = () => import('@/containers/DefaultContainer')
 // Views
 const Dashboard = () => import('@/views/Dashboard')
 
+// Views - Academicos
+const Cursos = () => import('@/views/academico/Cursos')
+
+
 const Colors = () => import('@/views/theme/Colors')
 const Typography = () => import('@/views/theme/Typography')
 
 const Charts = () => import('@/views/Charts')
 const Widgets = () => import('@/views/Widgets')
+
+
 
 // Views - Components
 const Cards = () => import('@/views/base/Cards')
@@ -70,7 +76,7 @@ let router = new Router({
   routes: [
     {
       path: '/',
-      redirect: '/dashboard',
+      redirect: '/panel',
       name: 'Home',
       component: DefaultContainer,
       meta: {
@@ -78,9 +84,24 @@ let router = new Router({
       },
       children: [
         {
-          path: 'dashboard',
-          name: 'Dashboard',
+          path: 'panel',
+          name: 'Panel',
           component: Dashboard
+        },
+        {
+          path:'academico',
+          redirect:'academico/cursos',
+          name:'Academico',
+          component:{
+            render (c) { return c('router-view') }
+          },
+          children:[
+            {
+              path:'cursos',
+              name:'Cursos',
+              component: Cursos
+            }
+          ]
         },
         {
           path: 'theme',
