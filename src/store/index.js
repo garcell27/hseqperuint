@@ -30,10 +30,11 @@ export default new Vuex.Store({
   actions:{
     login({commit},user){
       return new Promise((resolve,reject)=>{
+        console.log(user)
         commit('auth_request')
         axios({url:"http://localhost/hseqapp/public/login",data: user, method: 'POST'})
           .then(resp => {
-            const token = resp.data.token
+            const token = resp.data.api_token
             const user = resp.data.user
             localStorage.setItem('token', token)
             // Add the following line:

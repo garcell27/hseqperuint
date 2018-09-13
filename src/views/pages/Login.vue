@@ -10,7 +10,9 @@
                   <h1>Login</h1>
                   <p class="text-muted">REGISTRE SU USUARIO Y CONTRASEÑA</p>
                   <b-input-group class="mb-3">
-                    <b-input-group-prepend><b-input-group-text><i class="icon-user"></i></b-input-group-text></b-input-group-prepend>
+                    <b-input-group-prepend>
+                      <b-input-group-text><i class="icon-user"></i></b-input-group-text>
+                    </b-input-group-prepend>
                     <b-form-input type="text" class="form-control" placeholder="Username" autocomplete="username"
                                   v-model="formlogin.username"/>
                   </b-input-group>
@@ -47,9 +49,9 @@ export default {
   },
   methods:{
     login:function(){
-      let username=this.username
-      let password=this.password
-      this.$store.dispatch('login',{username,password})
+      let username=this.formlogin.username
+      let password=this.formlogin.password
+      this.$store.dispatch('login',{username:username,password:password})
         .then(()=>this.$router.push('/'))
         .catch(err=>console.log(err))
     }
