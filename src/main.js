@@ -10,6 +10,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 import Axios from 'axios'
+import VeeValidate from 'vee-validate'
 // todo
 // cssVars()
 
@@ -20,7 +21,7 @@ const token = localStorage.getItem('user-token')
 if (token) {
   Vue.prototype.$http.defaults.headers.common['Api-Token'] = token
 }
-
+Vue.use(VeeValidate)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

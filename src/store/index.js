@@ -6,8 +6,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state:{
     status:'',
+    urlback:'http://localhost/hseqapp/public/',
     token:localStorage.getItem('token')||'',
-    user:{}
+    loginform:{},
+    user: JSON.parse(localStorage.getItem('user'))||''
   },
   mutations:{
     auth_request(state){
@@ -24,19 +26,19 @@ export default new Vuex.Store({
     logout(state){
       state.status=''
       state.token=''
-      state.user={}
+      state.loginform={}
     }
   },
   actions:{
-    login({commit},user){
+    login({commit},loginform){
       return new Promise((resolve,reject)=>{
-        console.log(user)
         commit('auth_request')
-        axios({url:"http://localhost/hseqapp/public/login",data: user, method: 'POST'})
+        axios({url:this.state.urlback+"login",data: loginform, method: 'POST'})
           .then(resp => {
             const token = resp.data.api_token
-            const user = resp.data.user
+            const user = resp.data
             localStorage.setItem('token', token)
+            localStorage.setItem('user',JSON.stringify(user))
             // Add the following line:
             axios.defaults.headers.common['Api-Token'] = token
             commit('auth_success', token, user)
@@ -45,6 +47,7 @@ export default new Vuex.Store({
           .catch(err => {
             commit('auth_error')
             localStorage.removeItem('token')
+            localStorage.removeItem('user')
             reject(err)
           })
       })
@@ -53,6 +56,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         commit('logout')
         localStorage.removeItem('token')
+        localStorage.removeItem('user')
         delete axios.defaults.headers.common['Api-Token']
         resolve()
       })
@@ -61,5 +65,6 @@ export default new Vuex.Store({
   getters : {
     isLoggedIn: state => !!state.token,
     authStatus: state => state.status,
+    urlbackend: state => state.urlback
   }
 })
