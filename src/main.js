@@ -11,6 +11,8 @@ import router from './router'
 import store from './store'
 import Axios from 'axios'
 import VeeValidate from 'vee-validate'
+import ElementLoading from 'vue-element-loading'
+
 // todo
 // cssVars()
 
@@ -29,6 +31,6 @@ new Vue({
   store,
   template: '<App/>',
   components: {
-    App
+    App, ElementLoading
   }
 })

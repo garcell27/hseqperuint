@@ -31,6 +31,7 @@
     "vee-validate": "^2.1.0-beta.9",
     "vue": "^2.5.17",
     "vue-chartjs": "^3.4.0",
+    "vue-element-loading": "^1.0.4",
     "vue-perfect-scrollbar": "^0.1.0",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
