@@ -21,15 +21,74 @@
             </b-link>
           </div>
         </div>
-        <b-form >
           <b-form-group
-            label-for="des_curso"
-            description="DESCRIPCION"
-            :label-cols="3"
+            label="DESCRIPCION :"
+            :label-cols="2"
             :horizontal="true">
-            <b-form-input v-model="formCurso.descripcion" type="text" placeholder="DESCRIPCION"></b-form-input>
+            <b-form-input v-model="formCurso.descripcion" type="text" ></b-form-input>
           </b-form-group>
-        </b-form>
+          <b-row>
+            <b-col>
+              <b-form-group
+                label="DURACION :"
+                :label-cols="4"
+                :horizontal="true">
+                <b-input-group append="Horas" >
+                  <b-form-input v-model="formCurso.duracion" type="number" min="1" ></b-form-input>
+                </b-input-group>
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <b-form-group
+                label="CERTIFICADO :"
+                :label-cols="4"
+                :horizontal="true">
+                <b-form-radio-group v-model="formCurso.certificacion" >
+                  <b-form-radio  value="1" >Si</b-form-radio>
+                  <b-form-radio  value="0" >No</b-form-radio>
+                </b-form-radio-group>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-form-group
+                label="MONEDA :"
+                :label-cols="4"
+                :horizontal="true">
+                <b-form-select v-model="formCurso.moneda_id" >
+                  <option v-for="moneda in monedas"  :value="moneda.id" >{{ moneda.descripcion }}</option>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <b-form-group
+                label="PRECIO SUG. :"
+                :label-cols="4"
+                :horizontal="true">
+                <b-input-group :prepend="moneda_default" >
+                  <b-form-input v-model="formCurso.costo" type="number"></b-form-input>
+                </b-input-group>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-form-group
+            label="VIGENCIA :"
+            :label-cols="2"
+            :horizontal="true">
+            <b-form-select v-model="formCurso.vigencia" >
+              <option  value="0" >Ninguna</option>
+              <option  value="6" >6 Meses</option>
+              <option  value="12" >1 Año</option>
+              <option  value="24" >2 Años</option>
+            </b-form-select>
+          </b-form-group>
+          <b-form-group
+            label="DETALLE :"
+            :label-cols="2"
+            :horizontal="true">
+            <b-form-textarea  v-model="formCurso.detalle" :rows="3" ></b-form-textarea>
+          </b-form-group>
       </b-card>
     </div>
 </template>
@@ -47,6 +106,7 @@
               loading:false,
               accion:0,
               cursos:[],
+              monedas:[],
               formCurso:{
                 idcurso:null,
                 descripcion:null,
@@ -69,6 +129,7 @@
           },
           created:function(){
             this.listar();
+            this.listarMonedas();
           },
           methods:{
             agregar:function(){
@@ -89,6 +150,20 @@
                   this.loading=false
               })
             },
+            listarMonedas:function(){
+              let urlback=this.$store.getters.urlbackend
+              let token=localStorage.getItem('token')
+              this.loading=true
+              axios.defaults.headers.common['Api-Token'] = token
+              axios({url:urlback+'monedas',method:'GET'})
+                .then(response=>{
+                  this.monedas=response.data
+                  this.loading=false
+                }).catch(error=>{
+                console.log(error)
+                this.loading=false
+              })
+            },
             crear_curso:function () {
               this.accion=1
 
@@ -105,6 +180,15 @@
               }else{
                 return false;
               }
+            },
+            moneda_default:function(){
+              let monedasel=null
+              for(let i=0 ;i<this.monedas.length;i++){
+                if(this.monedas[i].id==this.formCurso.moneda_id){
+                  monedasel=this.monedas[i].simbolo
+                }
+              }
+              return monedasel
             }
           }
     }
