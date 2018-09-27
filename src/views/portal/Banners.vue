@@ -13,8 +13,8 @@
 
        </b-row>
      </b-card>
-     <b-modal title="Registro de Banner" size="lg" v-model="myModal" @ok="myModal = false"
-        :no-close-on-backdrop="true">
+     <b-modal title="REGISTRO DE BANNER" size="lg" v-model="myModal"
+        :no-close-on-backdrop="true" header-bg-variant="success">
           <b-form>
               <b-form-group
                   label="TITULO :"
@@ -39,6 +39,7 @@
                   :horizontal="true">
                   <b-form-textarea v-model="formbanner.detalle" :rows="3"></b-form-textarea>
               </b-form-group>
+
           </b-form>
      </b-modal>
    </div>
