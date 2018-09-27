@@ -14,7 +14,11 @@ const Dashboard = () => import('@/views/Dashboard')
 const Cursos = () => import('@/views/academico/Cursos')
 
 
-const Colors = () => import('@/views/theme/Colors')
+// Views - Portal
+
+const Banners = () => import('@/views/portal/Banners')
+
+
 const Typography = () => import('@/views/theme/Typography')
 
 const Charts = () => import('@/views/Charts')
@@ -104,17 +108,17 @@ let router = new Router({
           ]
         },
         {
-          path: 'theme',
-          redirect: '/theme/colors',
-          name: 'Theme',
+          path: 'portal',
+          redirect: '/portal/banners',
+          name: 'Portal',
           component: {
             render (c) { return c('router-view') }
           },
           children: [
             {
-              path: 'colors',
-              name: 'Colors',
-              component: Colors
+              path: 'banners',
+              name: 'Banners',
+              component: Banners
             },
             {
               path: 'typography',
