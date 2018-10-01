@@ -10,34 +10,47 @@
          </div>
        </div>
        <b-row>
-
+          <b-col sm="6" md="3" lg="4" v-for="banner in banners">
+            <b-card :title="banner.titulo" :img-src="banner.nombreurl">
+              <p class="card-text">{{ banner.detalle }}</p>
+            </b-card>
+          </b-col>
        </b-row>
      </b-card>
      <b-modal title="REGISTRO DE BANNER" size="lg" v-model="myModal"
-        :no-close-on-backdrop="true" header-bg-variant="success">
-          <b-form>
+        :no-close-on-backdrop="true" :header-bg-variant="submitStatus" @ok="registrar_banner">
+          <b-alert>
+
+          </b-alert>
+          <b-form @submit="registrar_banner" @reset="reset_form" >
+              <b-form-group
+                label="BANNER :"
+                :label-cols="2"
+                :horizontal="true">
+                <b-form-file v-model="formbanner.file" name="imagen" :state="!$v.formbanner.file.$invalid"
+                             ref="fileinput" accept="image/*" @change="previewImagen">
+                </b-form-file>
+                <b-form-invalid-feedback>Seleccione una imagen</b-form-invalid-feedback>
+              </b-form-group>
+              <b-row>
+                <b-col>
+                  <b-img rounded class="preview-imagen" :src="imageData" fluid/>
+                </b-col>
+              </b-row>
               <b-form-group
                   label="TITULO :"
                   :label-cols="2"
                   :horizontal="true">
-                  <b-form-input v-model="formbanner.titulo" ></b-form-input>
+                  <b-form-input v-model="formbanner.titulo"
+                          name="titulo"></b-form-input>
               </b-form-group>
-              <b-row>
-                  <b-col>
-                      <b-img rounded class="preview-imagen" :src="imageData" fluid/>
-                  </b-col>
-              </b-row>
-              <b-form-group
-                  label="BANNER :"
-                  :label-cols="2"
-                  :horizontal="true">
-                   <b-form-file v-model="formbanner.file" accept="image/*" @change="previewImagen"></b-form-file>
-              </b-form-group>
+
+
               <b-form-group
                   label="DESCRIPCION"
                   :label-cols="2"
                   :horizontal="true">
-                  <b-form-textarea v-model="formbanner.detalle" :rows="3"></b-form-textarea>
+                  <b-form-textarea v-model="formbanner.detalle" :rows="3" name="descripcion"></b-form-textarea>
               </b-form-group>
 
           </b-form>
@@ -48,6 +61,7 @@
 <script>
     import axios from 'axios'
     import ElementLoading from 'vue-element-loading'
+    import { required } from 'vuelidate/lib/validators'
     export default {
         name: "Banners",
         components:{
@@ -63,11 +77,19 @@
                     titulo:null,
                     detalle:null
                 },
-                imageData: null
+                imageData: null,
+                submitStatus:'info'
             }
         },
         created:function(){
             this.listar_banner()
+        },
+        validations:{
+            formbanner: {
+              file:{
+                  required
+              }
+            }
         },
         methods:{
             crea_banner:function () {
@@ -81,7 +103,7 @@
               axios.defaults.headers.common['Api-Token'] = token
               axios({url:urlback+'banners',method:'GET'})
               .then(response=>{
-                  this.monedas=response.data
+                  this.banners=response.data
                   this.loading=false
               }).catch(error=>{
                   console.log(error)
@@ -100,11 +122,48 @@
                     this.imageData=null
                 }
             },
+            clearFiles () {
+                this.$refs.fileinput.reset();
+            },
             reset_form:function(){
-                this.formbanner.titulo=null
+                this.$v.$reset()
+                this.submitStatus='info'
+                this.formbanner.titulo=''
                 this.formbanner.file=null
-                this.formbanner.detalle=null
+                this.formbanner.detalle=''
                 this.imageData=null
+                this.clearFiles()
+            },
+            registrar_banner(evt){
+                evt.preventDefault()
+                this.$v.$touch()
+                if (this.$v.$invalid) {
+                  this.submitStatus = 'danger'
+                } else {
+                  this.submitStatus = 'success'
+                  let urlback=this.$store.getters.urlbackend
+                  let token=localStorage.getItem('token')
+                  this.loading=true
+                  axios.defaults.headers.common['Api-Token'] = token
+                  let postdata= new FormData()
+                  postdata.append('banner',this.formbanner.file)
+                  postdata.append('titulo',this.formbanner.titulo)
+                  postdata.append('detalle',this.formbanner.detalle)
+                  axios({
+                    url:urlback+'banner',
+                    method:'POST',
+                    data:postdata,
+                    onUploadProgress:uploadEvent=>{
+                      console.log('Progreso : '+Math.round(uploadEvent.loaded*100/uploadEvent.total)+'% ')
+                    }
+                  })
+                    .then(response=>{
+                      this.myModal=false
+                      this.listar_banner()
+                    }).catch(error=>{
+
+                  })
+                }
             }
         }
     }

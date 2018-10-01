@@ -15,13 +15,13 @@
                     <b-input-group-prepend>
                       <b-input-group-text><i class="icon-user"></i></b-input-group-text>
                     </b-input-group-prepend>
-                    <b-form-input type="text" :class="{'is-invalid':errors.has('username')}" placeholder="Username" name="username"
-                                  v-model="formlogin.username" v-validate="'required'"  />
+                    <b-form-input type="text" placeholder="Username" name="username" :state="!$v.formlogin.username.$invalid"
+                                  v-model="formlogin.username"  />
                   </b-input-group>
                   <b-input-group class="mb-4">
                     <b-input-group-prepend><b-input-group-text><i class="icon-lock"></i></b-input-group-text></b-input-group-prepend>
-                    <b-form-input type="password" class="form-control" placeholder="Contraseña" :class="{'is-invalid':errors.has('password')}"
-                                   v-model="formlogin.password" name="password" v-validate="'required'" />
+                    <b-form-input type="password" class="form-control" placeholder="Contraseña"
+                                   v-model="formlogin.password" name="password"  :state="!$v.formlogin.password.$invalid"/>
                   </b-input-group>
                   <b-row>
                     <b-col cols="6">
@@ -39,17 +39,25 @@
 </template>
 
 <script>
+  import { required } from 'vuelidate/lib/validators'
 export default {
   name: 'Login',
   data(){
     return {
-      formlogin:{
-        username:null,
-        password:null,
-      },
+      formlogin:{},
       errorResponse:{
         estado:false,
         mensaje:''
+      }
+    }
+  },
+  validations:{
+    formlogin:{
+      username:{
+        required
+      },
+      password:{
+        required
       }
     }
   },
@@ -57,22 +65,23 @@ export default {
     login:function(){
       let username=this.formlogin.username
       let password=this.formlogin.password
-      this.$validator.validate().then(result=>{
-        if(result){
-         this.$store.dispatch('login',{username:username,password:password})
-            .then(()=>this.$router.push('/'))
-            .catch(err=>{
-              this.errorResponse.estado=true
-              let response=err.response
-              if(response.status==401){
-                this.errorResponse.mensaje='<strong>Error de Credenciales.</strong><br> El Usuario o la contraseña son incorrectas '
-              }else{
-                this.errorResponse.mensaje='Upss. Ha surgido un problema de conexion'
-              }
-            })
-        }
+      this.$v.$touch()
+      if (this.$v.$invalid) {
 
-      })
+      } else {
+        this.$store.dispatch('login',{username:username,password:password})
+          .then(()=>this.$router.push('/'))
+          .catch(err=>{
+            this.errorResponse.estado=true
+            let response=err.response
+            if(response.status==401){
+              this.errorResponse.mensaje='<strong>Error de Credenciales.</strong><br> El Usuario o la contraseña son incorrectas '
+            }else{
+              this.errorResponse.mensaje='Upss. Ha surgido un problema de conexion'
+            }
+          })
+      }
+
 
     }
   }
