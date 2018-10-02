@@ -23,15 +23,42 @@
         </div>
           <b-form-group
             label="DESCRIPCION :"
+            label-class="text-md-right"
             :label-cols="2"
+            breakpoint="md"
             :horizontal="true">
             <b-form-input v-model="formCurso.descripcion" type="text" ></b-form-input>
           </b-form-group>
+
+          <b-row>
+            <b-col md="6">
+            <b-form-group
+              label="MONEDA :"
+              :label-cols="4"
+              label-class="text-md-right"
+              :horizontal="true">
+              <b-form-select v-model="formCurso.moneda_id" >
+                <option v-for="moneda in monedas"  :value="moneda.id" >{{ moneda.descripcion }}</option>
+              </b-form-select>
+            </b-form-group>
+          </b-col>
+            <b-col md="6">
+            <b-form-group
+              label="PRECIO SUG. :"
+              label-class="text-sm-right"
+              :horizontal="true">
+              <b-input-group :prepend="moneda_default" >
+                <b-form-input v-model="formCurso.costo" type="number"></b-form-input>
+              </b-input-group>
+            </b-form-group>
+          </b-col>
+          </b-row>
+
           <b-row>
             <b-col>
               <b-form-group
                 label="DURACION :"
-                :label-cols="4"
+                label-class="text-sm-right"
                 :horizontal="true">
                 <b-input-group append="Horas" >
                   <b-form-input v-model="formCurso.duracion" type="number" min="1" ></b-form-input>
@@ -41,7 +68,7 @@
             <b-col>
               <b-form-group
                 label="CERTIFICADO :"
-                :label-cols="4"
+                label-class="text-sm-right"
                 :horizontal="true">
                 <b-form-radio-group v-model="formCurso.certificacion" >
                   <b-form-radio  value="1" >Si</b-form-radio>
@@ -50,28 +77,7 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row>
-            <b-col>
-              <b-form-group
-                label="MONEDA :"
-                :label-cols="4"
-                :horizontal="true">
-                <b-form-select v-model="formCurso.moneda_id" >
-                  <option v-for="moneda in monedas"  :value="moneda.id" >{{ moneda.descripcion }}</option>
-                </b-form-select>
-              </b-form-group>
-            </b-col>
-            <b-col>
-              <b-form-group
-                label="PRECIO SUG. :"
-                :label-cols="4"
-                :horizontal="true">
-                <b-input-group :prepend="moneda_default" >
-                  <b-form-input v-model="formCurso.costo" type="number"></b-form-input>
-                </b-input-group>
-              </b-form-group>
-            </b-col>
-          </b-row>
+
           <b-form-group
             label="VIGENCIA :"
             :label-cols="2"

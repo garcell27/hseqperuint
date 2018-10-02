@@ -10,9 +10,19 @@
          </div>
        </div>
        <b-row>
-          <b-col sm="6" md="3" lg="4" v-for="banner in banners">
+          <b-col sm="6" md="3" lg="4" v-for="(banner,index) in banners">
             <b-card :title="banner.titulo" :img-src="banner.nombreurl">
               <p class="card-text">{{ banner.detalle }}</p>
+              <div slot="footer">
+                <b-button-toolbar>
+                  <b-button-group class="mx-auto">
+                    <b-button v-if="banner.orden>1"><i class="fa fa-angle-double-left"></i> </b-button>
+                    <b-button variant="primary"> <i class="fa fa-pencil"></i> </b-button>
+                    <b-button variant="danger"> <i class="fa fa-close"></i> </b-button>
+                    <b-button v-if="banner.orden<banners.length"><i class="fa fa-angle-double-right"></i> </b-button>
+                  </b-button-group>
+                </b-button-toolbar>
+              </div>
             </b-card>
           </b-col>
        </b-row>
@@ -164,6 +174,12 @@
 
                   })
                 }
+            },
+            adelante:function(){
+
+            },
+            atras:function(){
+
             }
         }
     }
