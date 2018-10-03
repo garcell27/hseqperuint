@@ -142,34 +142,6 @@ let router = new Router({
       path: '/login',
       name:'Login',
       component:Login
-    },
-    {
-      path: '/pages',
-      redirect: '/pages/404',
-      name: 'Pages',
-      meta: {
-        requiresAuth: true
-      },
-      component: {
-        render (c) { return c('router-view') }
-      },
-      children: [
-        {
-          path: '404',
-          name: 'Page404',
-          component: Page404
-        },
-        {
-          path: '500',
-          name: 'Page500',
-          component: Page500
-        },
-        {
-          path: 'register',
-          name: 'Register',
-          component: Register
-        }
-      ]
     }
   ]
 })

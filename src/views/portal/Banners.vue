@@ -16,10 +16,10 @@
               <div slot="footer">
                 <b-button-toolbar>
                   <b-button-group class="mx-auto">
-                    <b-button v-if="banner.orden>1"><i class="fa fa-angle-double-left"></i> </b-button>
+                    <b-button v-if="banner.orden>1" @click="atras(index)"><i class="fa fa-angle-double-left"></i> </b-button>
                     <b-button variant="primary"> <i class="fa fa-pencil"></i> </b-button>
                     <b-button variant="danger"> <i class="fa fa-close"></i> </b-button>
-                    <b-button v-if="banner.orden<banners.length"><i class="fa fa-angle-double-right"></i> </b-button>
+                    <b-button v-if="banner.orden<banners.length" @click="adelante(index)"><i class="fa fa-angle-double-right"></i> </b-button>
                   </b-button-group>
                 </b-button-toolbar>
               </div>
@@ -175,11 +175,45 @@
                   })
                 }
             },
-            adelante:function(){
-
+            adelante:function(index){
+              let urlback=this.$store.getters.urlbackend
+              let token=localStorage.getItem('token')
+              this.loading=true
+              let bannerini=this.banners[index]
+              let bannerfin=this.banners[(index+1)]
+              let postdata={
+                idini:bannerini.id,
+                idfin:bannerfin.id
+              }
+              axios.defaults.headers.common['Api-Token'] = token
+              axios({url:urlback+'banner/orden',method:'POST',data:postdata})
+                .then(response=>{
+                  this.banners=response.data
+                  this.loading=false
+                }).catch(error=>{
+                console.log(error)
+                this.loading=false
+              })
             },
-            atras:function(){
-
+            atras:function(index){
+              let urlback=this.$store.getters.urlbackend
+              let token=localStorage.getItem('token')
+              this.loading=true
+              let bannerini=this.banners[(index-1)]
+              let bannerfin=this.banners[index]
+              let postdata={
+                idini:bannerini.id,
+                idfin:bannerfin.id
+              }
+              axios.defaults.headers.common['Api-Token'] = token
+              axios({url:urlback+'banner/orden',method:'POST',data:postdata})
+                .then(response=>{
+                  this.banners=response.data
+                  this.loading=false
+                }).catch(error=>{
+                console.log(error)
+                this.loading=false
+              })
             }
         }
     }
