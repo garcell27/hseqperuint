@@ -18,7 +18,7 @@
                   <b-button-group class="mx-auto">
                     <b-button v-if="banner.orden>1" @click="atras(index)"><i class="fa fa-angle-double-left"></i> </b-button>
                     <b-button variant="primary"> <i class="fa fa-pencil"></i> </b-button>
-                    <b-button variant="danger"> <i class="fa fa-close"></i> </b-button>
+                    <b-button variant="danger" @click="eliminar_banner(index)"> <i class="fa fa-close"></i> </b-button>
                     <b-button v-if="banner.orden<banners.length" @click="adelante(index)"><i class="fa fa-angle-double-right"></i> </b-button>
                   </b-button-group>
                 </b-button-toolbar>
@@ -105,6 +105,22 @@
             crea_banner:function () {
                 this.reset_form()
                 this.myModal=true
+            },
+            eliminar_banner:function(index){
+                if(confirm('¿Desea eliminar el banner seleccionado?')){
+                  let urlback=this.$store.getters.urlbackend
+                  let token=localStorage.getItem('token')
+                  this.loading=true
+                  let banner= this.banners[index]
+                  axios.defaults.headers.common['Api-Token'] = token
+                  axios({url:urlback+'banner/'+banner.id,method:'delete'})
+                  .then(response=>{
+                    this.listar_banner()
+                  }).catch(error=>{
+                    console.log(error)
+                    this.loading=false
+                  })
+                }
             },
             listar_banner:function(){
               let urlback=this.$store.getters.urlbackend
