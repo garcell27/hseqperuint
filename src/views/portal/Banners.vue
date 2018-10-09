@@ -5,13 +5,13 @@
          <strong><i class="fa fa-list"></i> LISTA DE BANNERS</strong>
          <div class="card-header-actions">
            <b-link href="#" class="btn btn-success btn-sm" @click="crea_banner">
-             <i class="icon-plus"></i> Agregar
+             <i class="icon-plus"></i> Subir
            </b-link>
          </div>
        </div>
        <b-row>
           <b-col sm="6" md="3" lg="4" v-for="(banner,index) in banners">
-            <b-card :title="banner.titulo" :img-src="banner.nombreurl">
+            <b-card :title="banner.titulo" :img-src="url_import(index)">
               <p class="card-text">{{ banner.detalle }}</p>
               <div slot="footer">
                 <b-button-toolbar>
@@ -86,7 +86,6 @@
                 banners:[],
                 loadImagenModal: false,
                 formbanner:{
-                    file:null,
                     titulo:null,
                     detalle:null
                 },
@@ -99,9 +98,17 @@
             this.listar_banner()
         },
         validations:{
-          imageData: required
+          imageData:{
+            required,
+          }
         },
         methods:{
+            url_import:function(index){
+              let banner= this.banners[index]
+              let imagen='';
+              imagen='img/banners/'+banner.nombreurl
+              return this.$store.getters.urlfront+imagen;
+            },
             crea_banner:function () {
                 this.reset_upload()
                 this.loadImagenModal=true
@@ -141,7 +148,8 @@
                 if(files[0]){
                     var reader = new FileReader()
                     reader.onload = (e)=>{
-                        this.previewData=e.target.result
+
+                      this.previewData= e.target.result
                     }
                     reader.readAsDataURL(files[0])
                 }else{
@@ -155,6 +163,7 @@
                 this.$v.$reset()
                 this.submitStatus='info'
                 this.imageData=null
+                this.previewData=null
                 this.clearFiles()
             },
             registrar_banner(evt){
@@ -181,14 +190,11 @@
                     .then(response=>{
                       this.loadImagenModal=false
                       let banner=response.data;
-                      //this.listar_banner()
+                      this.listar_banner()
                     }).catch(error=>{
 
                   })
                 }
-            },
-            optimizar:function(){
-
             },
             adelante:function(index){
               let urlback=this.$store.getters.urlbackend
