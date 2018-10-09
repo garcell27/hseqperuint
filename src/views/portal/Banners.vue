@@ -27,43 +27,46 @@
           </b-col>
        </b-row>
      </b-card>
-     <b-modal title="REGISTRO DE BANNER" size="lg" v-model="myModal"
+     <b-modal title="CARGAR BANNER" size="lg" v-model="loadImagenModal"
         :no-close-on-backdrop="true" :header-bg-variant="submitStatus" @ok="registrar_banner">
           <b-alert>
 
           </b-alert>
-          <b-form @submit="registrar_banner" @reset="reset_form" >
+          <b-form @submit="registrar_banner" @reset="reset_upload" >
               <b-form-group
                 label="BANNER :"
                 :label-cols="2"
                 :horizontal="true">
-                <b-form-file v-model="formbanner.file" name="imagen" :state="!$v.formbanner.file.$invalid"
+                <b-form-file v-model="imageData" name="imagen" :state="!$v.imageData.$invalid"
                              ref="fileinput" accept="image/*" @change="previewImagen">
                 </b-form-file>
                 <b-form-invalid-feedback>Seleccione una imagen</b-form-invalid-feedback>
               </b-form-group>
               <b-row>
                 <b-col>
-                  <b-img rounded class="preview-imagen" :src="imageData" fluid/>
+                  <b-img rounded class="preview-imagen" :src="previewData" fluid/>
                 </b-col>
               </b-row>
-              <b-form-group
-                  label="TITULO :"
-                  :label-cols="2"
-                  :horizontal="true">
-                  <b-form-input v-model="formbanner.titulo"
-                          name="titulo"></b-form-input>
-              </b-form-group>
 
-
-              <b-form-group
-                  label="DESCRIPCION"
-                  :label-cols="2"
-                  :horizontal="true">
-                  <b-form-textarea v-model="formbanner.detalle" :rows="3" name="descripcion"></b-form-textarea>
-              </b-form-group>
 
           </b-form>
+     </b-modal>
+     <b-modal>
+       <b-form-group
+         label="TITULO :"
+         :label-cols="2"
+         :horizontal="true">
+         <b-form-input v-model="formbanner.titulo"
+                       name="titulo"></b-form-input>
+       </b-form-group>
+
+
+       <b-form-group
+         label="DESCRIPCION"
+         :label-cols="2"
+         :horizontal="true">
+         <b-form-textarea v-model="formbanner.detalle" :rows="3" name="descripcion"></b-form-textarea>
+       </b-form-group>
      </b-modal>
    </div>
 </template>
@@ -81,13 +84,14 @@
             return {
                 loading: false,
                 banners:[],
-                myModal: false,
+                loadImagenModal: false,
                 formbanner:{
                     file:null,
                     titulo:null,
                     detalle:null
                 },
                 imageData: null,
+                previewData:null,
                 submitStatus:'info'
             }
         },
@@ -95,16 +99,12 @@
             this.listar_banner()
         },
         validations:{
-            formbanner: {
-              file:{
-                  required
-              }
-            }
+          imageData: required
         },
         methods:{
             crea_banner:function () {
-                this.reset_form()
-                this.myModal=true
+                this.reset_upload()
+                this.loadImagenModal=true
             },
             eliminar_banner:function(index){
                 if(confirm('¿Desea eliminar el banner seleccionado?')){
@@ -141,22 +141,19 @@
                 if(files[0]){
                     var reader = new FileReader()
                     reader.onload = (e)=>{
-                        this.imageData=e.target.result
+                        this.previewData=e.target.result
                     }
                     reader.readAsDataURL(files[0])
                 }else{
-                    this.imageData=null
+                    this.previewData=null
                 }
             },
             clearFiles () {
                 this.$refs.fileinput.reset();
             },
-            reset_form:function(){
+            reset_upload:function(){
                 this.$v.$reset()
                 this.submitStatus='info'
-                this.formbanner.titulo=''
-                this.formbanner.file=null
-                this.formbanner.detalle=''
                 this.imageData=null
                 this.clearFiles()
             },
@@ -172,9 +169,7 @@
                   this.loading=true
                   axios.defaults.headers.common['Api-Token'] = token
                   let postdata= new FormData()
-                  postdata.append('banner',this.formbanner.file)
-                  postdata.append('titulo',this.formbanner.titulo)
-                  postdata.append('detalle',this.formbanner.detalle)
+                  postdata.append('banner',this.imageData)
                   axios({
                     url:urlback+'banner',
                     method:'POST',
@@ -184,12 +179,16 @@
                     }
                   })
                     .then(response=>{
-                      this.myModal=false
-                      this.listar_banner()
+                      this.loadImagenModal=false
+                      let banner=response.data;
+                      //this.listar_banner()
                     }).catch(error=>{
 
                   })
                 }
+            },
+            optimizar:function(){
+
             },
             adelante:function(index){
               let urlback=this.$store.getters.urlbackend
