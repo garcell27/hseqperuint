@@ -17,7 +17,7 @@
                 <b-button-toolbar>
                   <b-button-group class="mx-auto">
                     <b-button v-if="banner.orden>1" @click="atras(index)"><i class="fa fa-angle-double-left"></i> </b-button>
-                    <b-button variant="primary"> <i class="fa fa-pencil"></i> </b-button>
+                    <b-button variant="primary" @click="edit_banner(index)"> <i class="fa fa-pencil"></i> </b-button>
                     <b-button variant="danger" @click="eliminar_banner(index)"> <i class="fa fa-close"></i> </b-button>
                     <b-button v-if="banner.orden<banners.length" @click="adelante(index)"><i class="fa fa-angle-double-right"></i> </b-button>
                   </b-button-group>
@@ -47,11 +47,10 @@
                   <b-img rounded class="preview-imagen" :src="previewData" fluid/>
                 </b-col>
               </b-row>
-
-
           </b-form>
      </b-modal>
-     <b-modal>
+     <b-modal title="CONTENIDO DEL BANNER" size="lg" v-model="loadFormModal"
+              :no-close-on-backdrop="true" @ok="actualizar_banner">
        <b-form-group
          label="TITULO :"
          :label-cols="2"
@@ -85,7 +84,9 @@
                 loading: false,
                 banners:[],
                 loadImagenModal: false,
+                loadFormModal:false,
                 formbanner:{
+                    id:null,
                     titulo:null,
                     detalle:null
                 },
@@ -112,6 +113,13 @@
             crea_banner:function () {
                 this.reset_upload()
                 this.loadImagenModal=true
+            },
+            edit_banner:function(index) {
+              let banner = this.banners[index]
+              this.formbanner.id=banner.id
+              this.formbanner.titulo=banner.titulo
+              this.formbanner.detalle=banner.detalle
+              this.loadFormModal=true
             },
             eliminar_banner:function(index){
                 if(confirm('¿Desea eliminar el banner seleccionado?')){
@@ -159,6 +167,11 @@
             clearFiles () {
                 this.$refs.fileinput.reset();
             },
+            clearForm() {
+                this.formbanner.id=null
+                this.formbanner.titulo=null
+                this.formbanner.detalle=null
+            },
             reset_upload:function(){
                 this.$v.$reset()
                 this.submitStatus='info'
@@ -195,6 +208,28 @@
 
                   })
                 }
+            },
+            actualizar_banner:function(){
+              let urlback=this.$store.getters.urlbackend
+              let token=localStorage.getItem('token')
+              this.loading=true
+              axios.defaults.headers.common['Api-Token'] = token
+              let postdata={
+                titulo:this.formbanner.titulo,
+                detalle: this.formbanner.detalle
+              }
+              axios({
+                url:urlback+'banner/'+this.formbanner.id,
+                method:'PUT',
+                data:postdata,
+              })
+              .then(response=>{
+                this.loadFormModal=false
+                let banner=response.data;
+                this.listar_banner()
+              }).catch(error=>{
+
+              })
             },
             adelante:function(index){
               let urlback=this.$store.getters.urlbackend
