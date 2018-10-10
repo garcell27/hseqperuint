@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state:{
     status:'',
     urlback:'http://localhost/hseqapp/public/',
+    urlfront:'http://localhost/hseqapp/',
     token:localStorage.getItem('token')||'',
     loginform:{},
     user: JSON.parse(localStorage.getItem('user'))||''
@@ -65,6 +66,7 @@ export default new Vuex.Store({
   getters : {
     isLoggedIn: state => !!state.token,
     authStatus: state => state.status,
-    urlbackend: state => state.urlback
+    urlbackend: state => state.urlback,
+    urlfront: state =>state.urlfront,
   }
 })
