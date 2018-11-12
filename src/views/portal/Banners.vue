@@ -156,7 +156,6 @@
                 if(files[0]){
                     var reader = new FileReader()
                     reader.onload = (e)=>{
-
                       this.previewData= e.target.result
                     }
                     reader.readAsDataURL(files[0])
